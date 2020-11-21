@@ -11,6 +11,10 @@ int Trig = A5;
 float distance = 200;
 float minDistance = 0;
 int servoAngle = 90;
+int dir = 0;
+int driveSpeed = 125;
+int diffSpeed = 0;
+float dDistance = 0;
 
 #define ENA 5
 #define ENB 6
@@ -92,7 +96,7 @@ void setup() {
 } 
 
 //Drives the robot
-void drive(int leftSpeed = 200, int duration = 200, int rightSpeed = 200, bool leftDir = 1, bool rightDir = 1, bool brake = true){
+void drive(int leftSpeed = 200,int rightSpeed = 200, int duration = 200, bool leftDir = 1, bool rightDir = 1, bool brake = true){
   leftMotor(leftSpeed, leftDir);
   rightMotor(rightSpeed, rightDir);
   delay(duration);
@@ -125,10 +129,44 @@ bool isTimerAndCond(bool conditional = true){
 /********************************Loop - your's to edit!****************************************************************************/
 //Below is some skeleton code that calls functions.  Your primary task is to edit this code to accomplish your goals.
 void loop() {
-  myServo.write(0);
-  while(isTimerAndCond(distance > 212){
-    float distance = servoMoveAndMeasureDist(servoAngle, 75);
-    servoAngle += 5
+  dir = alignBot();
+  while(isTimerAndCond(distance < 212)){
+    if (distance < 10){
+      stop();
+    }
+    else{
+      drive(driveSpeed, driveSpeed, 1);
+      distance = servoMoveAndMeasureDist(90, 100);
+    }
+  dir = alignBot();
+  float oldDistance = distance;
+  while(isTimerAndCond(distance > 10)){
+    dDistance = distance - oldDistance;
+    if(dir == 1){
+      drive(driveSpeed, driveSpeed + dDistance, 100);
+    }
+    else{
+      drive(driveSpeed + dDistance, driveSpeed, 100);
+    }
+    oldDistance = distance;
+    distance = servoMoveAndMeasureDist(90, 100);
+  }
   }
   
+}
+
+int alignBot(){
+  myservo.write(0);
+  while(isTimerAndCond(distance > 212)){
+    servoAngle += 5;
+    distance = servoMoveAndMeasureDist(servoAngle, 100);
+  }
+  float timer = servoAngle / 1.309;
+  drive(125, 125, timer, 0, 1, true);
+  if (servoAngle > 90){
+    return(0); //Left
+  }
+  else{
+    return(1); //Right
+  }
 }
